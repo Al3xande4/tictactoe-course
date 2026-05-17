@@ -27,7 +27,7 @@ namespace ttt::my_player
     Sign Board::get(int x, int y) const
     {
         if (x < 0 || x >= BoardOps::WIDTH || y < 0 || y >= BoardOps::HEIGHT)
-            return Sign::NONE;
+            return Sign::WALL;
 
         const int bit_no = (x + y * BoardOps::WIDTH) * 2;
         const int byte_no = bit_no / 64;
