@@ -13,10 +13,9 @@ namespace ttt::my_player
     class Board
     {
     private:
-        static constexpr int BITMAP_SIZE = BoardOps::TOTAL_CELLS / 64;
+        static constexpr int BITMAP_SIZE = (BoardOps::TOTAL_CELLS * 2 + 63) / 64;
 
-        uint64_t m_xboard[BITMAP_SIZE];
-        uint64_t m_oboard[BITMAP_SIZE];
+        uint64_t m_board[BITMAP_SIZE];
 
     public:
         Board();
