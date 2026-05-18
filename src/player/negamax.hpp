@@ -61,8 +61,12 @@ namespace ttt::my_player
         for (const auto &m : moves)
         {
             fb.set(m.x, m.y, current_sign);
-            int score =
-                -negamax(fb, depth - 1, -beta, -alpha, opponent, bot_sign, m.x, m.y);
+            int score = -negamax(fb, depth - 1, -alpha - 1, -alpha, opponent, bot_sign, m.x, m.y);
+            if (score > alpha && score < beta)
+            {
+                score = -negamax(fb, depth - 1, -beta, -alpha, opponent, bot_sign, m.x, m.y);
+            }
+
             fb.set(m.x, m.y, Sign::NONE);
 
             if (score > max_score)
