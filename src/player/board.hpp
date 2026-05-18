@@ -13,9 +13,10 @@ namespace ttt::my_player
     class Board
     {
     private:
-        static constexpr int BITMAP_SIZE = (BoardOps::TOTAL_CELLS * 2 + 63) / 64;
+        static constexpr int BITMAP_SIZE = (BoardOps::TOTAL_CELLS * 2 + 7) / 8;
 
-        uint64_t m_board[BITMAP_SIZE];
+        char m_board[BITMAP_SIZE];
+        // Sign m_array[400];
 
     public:
         Board();
