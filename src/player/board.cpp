@@ -12,9 +12,6 @@ namespace ttt::my_player
     {
         memset(m_board, 0, BITMAP_SIZE);
 
-        int index = 0;
-        int bit_idx = 0;
-
         for (int y = 0; y < BoardOps::HEIGHT; y++)
         {
             for (int x = 0; x < BoardOps::WIDTH; x++)
@@ -29,22 +26,25 @@ namespace ttt::my_player
         if (x < 0 || x >= BoardOps::WIDTH || y < 0 || y >= BoardOps::HEIGHT)
             return Sign::WALL;
 
+        // return m_array[x + y * 20];
+
         const int bit_no = (x + y * BoardOps::WIDTH) * 2;
-        const int byte_no = bit_no / 64;
-        const uint64_t value = (m_board[byte_no] >> (bit_no % 64)) & 0b11ULL;
+        const int byte_no = bit_no / 8;
+        const char value = (m_board[byte_no] >> (bit_no % 8)) & 0b11;
         return static_cast<Sign>(value);
     }
 
     void Board::set(int x, int y, Sign sign)
     {
         if (x < 0 || x >= BoardOps::WIDTH || y < 0 || y >= BoardOps::HEIGHT)
-            throw "Index is out of boundaries: can not set sign here";
+            return;
+        // m_array[x + y * 20] = sign;
 
         const int bit_no = (x + y * BoardOps::WIDTH) * 2;
-        const int offset = bit_no % 64;
-        uint64_t &byte = m_board[bit_no / 64];
-        byte &= ~(0b11ULL << offset);
-        const uint64_t value = static_cast<uint64_t>(sign);
+        const int offset = bit_no % 8;
+        char &byte = m_board[bit_no / 8];
+        byte &= ~(0b11 << offset);
+        const char value = static_cast<char>(sign);
         byte |= value << offset;
     }
 }

@@ -45,97 +45,14 @@ namespace ttt::my_player
         }
     }
 
-    // enum Score
-    // {
-    //     FIVE = 100000000,
-    //     FOUR = 100000,
-    //     OPEN_THREE = 100000,
-    //     CLOSED_THREE = 10000,
-    //     OPEN_TWO = 10000,
-    //     CLOSED_TWO = 1000,
-    //     ONE = 1,
-    //     FORK = 10000000
-
-    // };
-
-    // inline constexpr int encode(const int line[], const int l)
-    // {
-    //     int code = 0, power = 1;
-    //     for (int i = 0; i < l; i++)
-    //     {
-    //         code += line[i] * power;
-    //         power *= 3;
-    //     }
-    //     return code;
-    // }
-
-    // inline constexpr std::array<int, 243> build_basic_pattern_table()
-    // {
-    //     std::array<int, 243> codes{0};
-
-    //     for (int i = 0; i < 243; i++)
-    //     {
-    //         int code = i;
-    //         int line[5]{0};
-
-    //         int stones = 0;
-    //         int blocked = 0;
-    //         for (int j = 0; j < 5; j++)
-    //         {
-    //             line[j] = code % 3;
-    //             if (line[j] == 1)
-    //                 stones++;
-    //             else if (line[j] == 2)
-    //             {
-    //                 blocked++;
-    //                 break;
-    //             }
-    //             code /= 3;
-    //         }
-    //         if (blocked > 0)
-    //         {
-    //             codes[i] = 0;
-    //             continue;
-    //         }
-
-    //         bool open = line[0] == 0 && line[4] == 0;
-    //         if (stones == 5)
-    //             codes[i] = Score::FIVE;
-    //         else if (stones == 4)
-    //             codes[i] = Score::FOUR;
-    //         else if (stones == 3)
-    //         {
-    //             if (open)
-    //                 codes[i] = Score::OPEN_THREE;
-    //             else
-    //                 codes[i] = Score::CLOSED_THREE;
-    //         }
-    //         else if (stones == 2)
-    //         {
-    //             if (open)
-    //                 codes[i] = Score::OPEN_TWO;
-    //             else
-    //                 codes[i] = Score::CLOSED_TWO;
-    //         }
-    //         else if (stones == 1)
-    //             codes[i] = Score::ONE;
-    //         else
-    //             codes[i] = 0;
-    //     }
-
-    //     return codes;
-    // }
-
-    // static constexpr std::array<int, 243> basic_pattern_table = build_basic_pattern_table();
-
     static constexpr float DECAY_FACTOR = 0.9f;
 
     enum PatterScore
     {
         FIVE = 10000000,
         OPEN_FOUR = 1000000,
-        CLOSED_FOUR = 20000,
-        OPEN_THREE = 100000,
+        CLOSED_FOUR = 100000,
+        OPEN_THREE = 50000,
         CLOSED_THREE = 5000,
         OPEN_TWO = 10000,
         CLOSED_TWO = 1000,
@@ -201,26 +118,26 @@ namespace ttt::my_player
             bool open_right = i < 4 && line[i + 5] == 0;
 
             bool closed = !open_left || !open_right;
-            bool decayed = false;
+            bool decayed = longest_player_streak != player_figures;
 
             int window_score = 0;
             if (player_figures == 5)
                 window_score = PatterScore::FIVE;
             else if (player_figures == 4)
             {
-                if (closed)
-                {
-                    if (decayed)
-                        window_score = PatterScore::CLOSED_FOUR * DECAY_FACTOR;
-                    else
-                        window_score = PatterScore::CLOSED_FOUR;
-                }
-                else
+                if ((open_left && line[i + 4] == 0) || (open_right && line[i] == 0))
                 {
                     if (decayed)
                         window_score = PatterScore::OPEN_FOUR * DECAY_FACTOR;
                     else
                         window_score = PatterScore::OPEN_FOUR;
+                }
+                else
+                {
+                    if (decayed)
+                        window_score = PatterScore::CLOSED_FOUR * DECAY_FACTOR;
+                    else
+                        window_score = PatterScore::CLOSED_FOUR;
                 }
             }
             else if (player_figures == 3)
@@ -294,7 +211,7 @@ namespace ttt::my_player
             build_line(board, x, y, player, dir, line);
 
             int s = pattern_table[encode_line(line)];
-            if (s >= OPEN_THREE)
+            if (s >= CLOSED_FOUR)
                 threats_count++;
             score += s;
         }
